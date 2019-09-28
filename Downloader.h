@@ -10,7 +10,7 @@ typedef void (^ResumableCallback)();
 
 @property (copy) NSString* fromUrl;
 @property (copy) NSString* toFile;
-@property (copy) NSString* password;
+@property (copy) NSString* keyPassword;
 @property (copy) NSDictionary* headers;
 @property (copy) DownloadCompleteCallback completeCallback;   // Download has finished (data written)
 @property (copy) ErrorCallback errorCallback;                 // Something went wrong
