@@ -117,26 +117,26 @@
       NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
       NSString *documentsDirectory = [paths objectAtIndex:0];
       NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:[destURL.absoluteString lastPathComponent]];
-      
-      
-      
-      
-      NSData *data = [NSData dataWithContentsOfFile:location.absoluteString];
+
+
+
+
+      NSData *data = [NSData dataWithContentsOfURL:location];
       //
       //        NSData *decryptedData = [RNDecryptor decryptData:encryptedData
       //                                            withPassword:@"123456"
       //                                                   error:&error];
       //
       //        [decryptedData writeToFile:dataPath atomically:YES];
-      
-      
+
+
       NSData *encryptedData = [RNEncryptor encryptData:data
                                           withSettings:kRNCryptorAES256Settings
-                                              password:self.password
+                                              password:@"123456"
                                                  error:&error];
-      
+
       [encryptedData writeToFile:dataPath options:NSDataWritingAtomic error:&error];
-      [fm removeItemAtPath:dataPath error:&error];
+      [fm removeItemAtURL:location error:&error];
     _bytesWritten = @([fm attributesOfItemAtPath:_params.toFile error:nil].fileSize);
   }
   if (error) {
