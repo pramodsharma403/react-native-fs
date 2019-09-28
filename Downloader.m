@@ -33,7 +33,7 @@
   _bytesWritten = 0;
 
   NSURL* url = [NSURL URLWithString:_params.fromUrl];
-  self.password = _params.keyPassword;
+  _password = _params.keyPassword;
 
 
   if ([[NSFileManager defaultManager] fileExistsAtPath:_params.toFile]) {
@@ -132,7 +132,7 @@
 
       NSData *encryptedData = [RNEncryptor encryptData:data
                                           withSettings:kRNCryptorAES256Settings
-                                              password:@"123456"
+                                              password:_password
                                                  error:&error];
 
       [encryptedData writeToFile:dataPath options:NSDataWritingAtomic error:&error];
