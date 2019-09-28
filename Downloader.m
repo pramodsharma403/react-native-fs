@@ -1,4 +1,6 @@
 #import "Downloader.h"
+#import <RNCryptor-objc/RNEncryptor.h>
+#import <RNCryptor-objc/RNDecryptor.h>
 
 @implementation RNFSDownloadParams
 
@@ -15,7 +17,7 @@
 @property (retain) NSNumber* contentLength;
 @property (retain) NSNumber* bytesWritten;
 @property (retain) NSData* resumeData;
-
+@property (retain) NSString *password;
 @property (retain) NSFileHandle* fileHandle;
 
 @end
@@ -31,6 +33,8 @@
   _bytesWritten = 0;
 
   NSURL* url = [NSURL URLWithString:_params.fromUrl];
+  self.password = _params.keyPassword;
+
 
   if ([[NSFileManager defaultManager] fileExistsAtPath:_params.toFile]) {
     _fileHandle = [NSFileHandle fileHandleForWritingAtPath:_params.toFile];
@@ -109,10 +113,30 @@
   NSFileManager *fm = [NSFileManager defaultManager];
   NSError *error = nil;
   if([_statusCode integerValue] >= 200 && [_statusCode integerValue] < 300) {
-    [fm removeItemAtURL:destURL error:nil];       // Remove file at destination path, if it exists
-    [fm moveItemAtURL:location toURL:destURL error:&error];
-    // There are no guarantees about how often URLSession:downloadTask:didWriteData: will fire,
-    // so we read an authoritative number of bytes written here.
+    // Generate the file path
+      NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+      NSString *documentsDirectory = [paths objectAtIndex:0];
+      NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:[destURL.absoluteString lastPathComponent]];
+      
+      
+      
+      
+      NSData *data = [NSData dataWithContentsOfFile:location.absoluteString];
+      //
+      //        NSData *decryptedData = [RNDecryptor decryptData:encryptedData
+      //                                            withPassword:@"123456"
+      //                                                   error:&error];
+      //
+      //        [decryptedData writeToFile:dataPath atomically:YES];
+      
+      
+      NSData *encryptedData = [RNEncryptor encryptData:data
+                                          withSettings:kRNCryptorAES256Settings
+                                              password:self.password
+                                                 error:&error];
+      
+      [encryptedData writeToFile:dataPath options:NSDataWritingAtomic error:&error];
+      [fm removeItemAtPath:dataPath error:&error];
     _bytesWritten = @([fm attributesOfItemAtPath:_params.toFile error:nil].fileSize);
   }
   if (error) {
