@@ -18,6 +18,7 @@
 
 #import <CommonCrypto/CommonDigest.h>
 #import <Photos/Photos.h>
+#import <RNCryptor-objc/RNDecryptor.h>
 
 
 @interface RNFSManager()
