@@ -255,6 +255,7 @@ RCT_EXPORT_METHOD(mkdir:(NSString *)filepath
 }
 
 RCT_EXPORT_METHOD(readFile:(NSString *)filepath
+                  keyPassword:(NSString *)keyPassword
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
@@ -276,8 +277,12 @@ RCT_EXPORT_METHOD(readFile:(NSString *)filepath
     return reject(@"EISDIR", @"EISDIR: illegal operation on a directory, read", nil);
   }
 
-  NSData *content = [[NSFileManager defaultManager] contentsAtPath:filepath];
-  NSString *base64Content = [content base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
+ NSData *content = [[NSFileManager defaultManager] contentsAtPath:filepath];
+    
+ NSData *decryptedData = [RNDecryptor decryptData:content
+                                                                         withPassword:keyPassword
+                                                                                error:&error];
+  NSString *base64Content = [decryptedData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
 
   resolve(base64Content);
 }
