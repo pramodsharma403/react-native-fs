@@ -141,7 +141,8 @@ type FSInfoResult = {
 /**
  * Generic function used by readFile and readFileAssets
  */
-function readFileGeneric(filepath: string, encodingOrOptions: ?string, command: Function) {
+function readFileGeneric(filepath: string, encodingOrOptions: ?string, command: Function, keyPassword: string,
+) {
   var options = {
     encoding: 'utf8'
   };
@@ -154,7 +155,7 @@ function readFileGeneric(filepath: string, encodingOrOptions: ?string, command: 
     }
   }
 
-  return command(normalizeFilePath(filepath)).then((b64) => {
+  return command(normalizeFilePath(filepath), keyPassword).then((b64) => {
     var contents;
 
     if (options.encoding === 'utf8') {
@@ -303,8 +304,8 @@ var RNFS = {
     });
   },
 
-  readFile(filepath: string, encodingOrOptions?: any): Promise<string> {
-    return readFileGeneric(filepath, encodingOrOptions, RNFSManager.readFile);
+  readFile(filepath: string, encodingOrOptions?: any, keyPassword: string,): Promise<string> {
+    return readFileGeneric(filepath, encodingOrOptions, RNFSManager.readFile, keyPassword);
   },
 
   read(filepath: string, length: number = 0, position: number = 0, encodingOrOptions?: any): Promise<string> {
